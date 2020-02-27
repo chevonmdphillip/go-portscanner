@@ -7,20 +7,20 @@ import (
 )
 
 func worker(ports, results chan int) {
-	for p:= range ports {
-		address := fmt.Sprintf("scanme.nmap.org:%d",p)
+	for p := range ports {
+		address := fmt.Sprintf("scanme.nmao.org:%d",p)
 		conn, err := net.Dial("tcp",address)
 		if err !=nil {
 			results <- 0
 			continue
 		}
-		conn.Close()
+		_ = conn.Close()
 		results <- p
 	}
 }
 func main() {
 	// Dial returns Conn and error. We just need error to return nil ensuring that our connection was successful.
-	ports := make(chan int)
+	ports := make(chan int, 100)
 	results := make(chan int)
 	var openports []int
 
@@ -29,7 +29,7 @@ func main() {
 	}
 
 	go func() {
-		for i := 1; 1 <= 1024; i++ {
+		for i := 1; i <= 1024; i++ {
 			ports <- i
 		}
 	}()
@@ -44,7 +44,7 @@ func main() {
 	close(ports)
 	close(results)
 	sort.Ints(openports)
-	for _, port := range openports{
+	for _, port := range openports {
 		fmt.Printf("%d open\n", port)
 	}
 }
